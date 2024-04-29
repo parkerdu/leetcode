@@ -1,4 +1,5 @@
 class Solution:
+    """按奇偶排序"""
     def sortArrayByParityII(self, A):
         # n = len(A)
         # A = sorted(A,key=lambda x:x%2)
