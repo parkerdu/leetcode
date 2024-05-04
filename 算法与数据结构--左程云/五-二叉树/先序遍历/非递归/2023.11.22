@@ -1,0 +1,24 @@
+// 手撕非递归先序遍历
+
+func preOrder2023(root *TreeNode) {
+    if root == nil {
+        return
+    }
+    // step1: 准备1个栈
+    stack := make([]*TreeNode, 0, 64)
+    // step2: 将根节点进栈
+    stack = append(stack, root)
+    // step3: 若栈非空则循环遍历
+    for len(stack) > 0 {
+        // step3.1: 弹出一个元素并打印
+        cur := stack[len(stack)-1]
+        fmt.Println(cur.Val)
+        // step3.2: 右孩子先进，左孩子再进
+        if cur.right != nil {
+            stack = append(stack, cur.right)
+        }
+        if cur.left != nil {
+            stack = append(stack, cur.left)
+        }
+    }
+}
