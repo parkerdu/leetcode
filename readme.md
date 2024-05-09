@@ -58,15 +58,19 @@ todo
 
 洪水填充
 
-## 2024.05.05
+
+
+## 2024.05.09
+
+1个旧题: 逆序对问题
+
+## 2024.05.1?
 
 https://github.com/lewiscrow/WorkHardAndFindJob/blob/master/%E5%A4%8D%E4%B9%A0/%E9%9D%A2%E8%AF%95/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8%E9%9D%A2%E7%BB%8F.md
 
 2个新题：洪水填充+ [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
 
 1个旧题：25k个一组反转链表 
-
-
 
 
 
