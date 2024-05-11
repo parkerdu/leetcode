@@ -64,17 +64,37 @@ todo
 
 1个旧题: 逆序对问题
 
+
+
+## 2024.05.11
+
+1个旧题：25k个一组反转链表 (该题今天面试考到了，现场虽然写出来，但是不够熟练)
+
+关键点：
+
+1、4个变量，之前的头和尾巴，反转后的头，反转后的start, stop，主函数里面两组之间拼接，rt.next, rt = start,stop, 不要忘了rt自己也要更新
+
+2，子函数要返回3个参数，start,stop,next 前两个给组之间合并用，next表示当前head链表的未遍历的第一个元素，给head更新用
+
+05.12
+
+链表翻转2 + k个一组翻转
+
 ## 2024.05.1?
 
 https://github.com/lewiscrow/WorkHardAndFindJob/blob/master/%E5%A4%8D%E4%B9%A0/%E9%9D%A2%E8%AF%95/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8%E9%9D%A2%E7%BB%8F.md
 
 2个新题：洪水填充+ [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
 
-1个旧题：25k个一组反转链表 
 
 
 
-todo 旧题： 
+
+
+
+
+
+# todo 旧题： 
 
 给一个整数数组，找右边元素减左边元素的最大差值
 
@@ -83,3 +103,7 @@ todo 旧题：
 32最长有效括号
 
 88 合并两个有序数组
+
+# todo新题
+
+打家劫舍123
