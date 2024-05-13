@@ -54,10 +54,6 @@
 
 逆序对：转换为大和问题
 
-todo
-
-洪水填充
-
 
 
 ## 2024.05.09
@@ -76,19 +72,99 @@ todo
 
 2，子函数要返回3个参数，start,stop,next 前两个给组之间合并用，next表示当前head链表的未遍历的第一个元素，给head更新用
 
-05.12
+## 2024.05.13
 
-链表翻转2 + k个一组翻转
-
-## 2024.05.1?
+92链表翻转2 + k个一组翻转  -- 已完成
 
 https://github.com/lewiscrow/WorkHardAndFindJob/blob/master/%E5%A4%8D%E4%B9%A0/%E9%9D%A2%E8%AF%95/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8%E9%9D%A2%E7%BB%8F.md
 
-2个新题：洪水填充+ [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
+
+
+| 215. 数组中的第K个最大元素 | 3                                                         |
+| -------------------------- | --------------------------------------------------------- |
+| 145. 二叉树的后序遍历      |                                                           |
+| 33. 搜索旋转排序数组       | 按mid在左半边还是右半边来分，在左半边再讨论，右半边再讨论 |
+
+
+
+33题关键点：
+
+![](images/33.jpg)
+
+- If the entire left part is monotonically increasing, which means the pivot point is on the right part
+  - If left <= target < mid ------> drop the right half
+  - Else ------> drop the left half
+- If the entire right part is monotonically increasing, which means the pivot point is on the left part
+  - If mid < target <= right ------> drop the left half
+  - Else ------> drop the right half
+
+参考链接：https://leetcode.com/problems/search-in-rotated-sorted-array/discuss/14436/Revised-Binary-Search/191339
+
+```java
+public int search(int[] nums, int target) {
+    if (nums == null || nums.length == 0) {
+        return -1;
+    }
+    
+    /*.*/
+    int left = 0, right = nums.length - 1;
+    //when we use the condition "left <= right", we do not need to determine if nums[left] == target
+    //in outside of loop, because the jumping condition is left > right, we will have the determination
+    //condition if(target == nums[mid]) inside of loop
+    while (left <= right) {
+        //left bias
+        int mid = left + (right - left) / 2;
+        if (target == nums[mid]) {
+            return mid;
+        }
+        //if left part is monotonically increasing, or the pivot point is on the right part
+        if (nums[left] <= nums[mid]) {
+            //must use "<=" at here since we need to make sure target is in the left part,
+            //then safely drop the right part
+            if (nums[left] <= target && target < nums[mid]) {
+                right = mid - 1;
+            }
+            else {
+                //right bias
+                left = mid + 1;
+            }
+        }
+
+        //if right part is monotonically increasing, or the pivot point is on the left part
+        else {
+            //must use "<=" at here since we need to make sure target is in the right part,
+            //then safely drop the left part
+            if (nums[mid] < target && target <= nums[right]) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+    }
+    return -1;
+}
+```
 
 
 
 
+
+
+
+
+
+## 2024.05.14
+
+LRU
+
+编辑距离
+
+反转字符串中的单词 III
+
+快排
+
+环形链表
 
 
 
@@ -104,6 +180,48 @@ https://github.com/lewiscrow/WorkHardAndFindJob/blob/master/%E5%A4%8D%E4%B9%A0/%
 
 88 合并两个有序数组
 
+
+
 # todo新题
 
 打家劫舍123
+
+2个新题：洪水填充+ [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
+
+# 阿里后端题目
+
+[参考leetcodeTOP](https://github.com/afatcoder/LeetcodeTop/blob/master/alibaba/backend.md)
+
+网站题目频率排序 https://codetop.cc/home
+
+| 算法题                                  | 次数 |
+| --------------------------------------- | ---- |
+| 215. 数组中的第K个最大元素              | 3    |
+| 145. 二叉树的后序遍历                   | 2    |
+| 1. 两数之和                             | 2    |
+| 232. 用栈实现队列                       | 2    |
+| 88. 合并两个有序数组                    | 2    |
+| 15. 三数之和                            | 2    |
+| 349. 两个数组的交集                     | 1    |
+| 5. 最长回文子串                         | 1    |
+| 557. 反转字符串中的单词 III             | 1    |
+| 72. 编辑距离                            | 1    |
+| 543. 二叉树的直径                       | 1    |
+| 144. 二叉树的前序遍历                   | 1    |
+| 94. 二叉树的中序遍历                    | 1    |
+| 剑指 Offer 22. 链表中倒数第k个节点      | 1    |
+| 2. 两数相加                             | 1    |
+| 70. 爬楼梯                              | 1    |
+| 509. 斐波那契数                         | 1    |
+| 21. 合并两个有序链表                    | 1    |
+| 46. 全排列                              | 1    |
+| 82. 删除排序链表中的重复元素 II         | 1    |
+| 剑指 Offer 52. 两个链表的第一个公共节点 | 1    |
+| 225. 用队列实现栈                       | 1    |
+| 350. 两个数组的交集 II                  | 1    |
+| 415. 字符串相加                         | 1    |
+| 268. 缺失数字                           | 1    |
+| 53. 最大子序和                          | 1    |
+| 344. 反转字符串                         | 1    |
+| 136. 只出现一次的数字                   | 1    |
+| 剑指 Offer 24. 反转链表                 | 1    |
