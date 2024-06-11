@@ -6,13 +6,15 @@ func permute(nums []int) [][]int {
 	if len(nums) == 1 {
 		return [][]int{nums}
 	}
-	out := make([][]int,0)
+	out := make([][]int, 0)
 	for i := range nums {
 		nums[i], nums[0] = nums[0], nums[i]
 		res := permute(nums[1:])
 		for j := range res {
 			res[j] = append(res[j], nums[0])
-			out = append(out, res[j])
+			line := make([]int, 1+len(nums))
+			copy(line, res[j])
+			out = append(out, line)
 		}
 		nums[i], nums[0] = nums[0], nums[i]
 	}
@@ -22,16 +24,16 @@ func permute(nums []int) [][]int {
 // 空间优化，直接使用nums数组本身交换来做，而不是make和各种append
 func permute1(nums []int) [][]int {
 	n := len(nums)
-	res := make([][]int,0)
-	dfs(0,n,nums,&res)
+	res := make([][]int, 0)
+	dfs(0, n, nums, &res)
 	return res
 }
 
-func dfs (first,n int, nums []int, res *[][]int) {
+func dfs(first, n int, nums []int, res *[][]int) {
 	if first == n {
 		tmp := []int{}
 		for i := range nums {
-			tmp = append(tmp,nums[i])
+			tmp = append(tmp, nums[i])
 		}
 		*res = append(*res, tmp)
 		return
@@ -40,13 +42,12 @@ func dfs (first,n int, nums []int, res *[][]int) {
 		// 当前i和first交换
 		nums[i], nums[first] = nums[first], nums[i]
 		// 交换之后，first前进继续
-		dfs(first+1,n,nums, res)
+		dfs(first+1, n, nums, res)
 		// 交换回来
 		nums[i], nums[first] = nums[first], nums[i]
 	}
 }
 
-
 func main() {
-	fmt.Println(permute1([]int{1,2,3}))
+	fmt.Println(permute([]int{1, 2, 3}))
 }

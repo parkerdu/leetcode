@@ -685,3 +685,110 @@ dummy->1->2->3->4->nil
 
 
 带返回值的方法测一下效果
+
+
+
+## 19、236二叉树最近公共祖先
+
+法一：使用map记录父亲节点，然后转换为单链表相交问题
+
+step1: 前序遍历整个树，记录下每个节点的父亲节点
+
+step2: p先向上走，并使用一个set记录走过的路径
+
+step3: q向上走，若q和p的路径重合，说明就是lca，返回答案
+
+
+
+法二：
+
+```go
+// 法二：递归
+/*
+定义该函数是递归的关键
+若p,q都在root下面，返回公共祖先
+若p,q只有一个在root下面，返回p或者q
+若p,q都不在root下，返回nil
+*/
+func lowestCommonAncestor1(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	// 当前节点为p或者q返回
+	if root == p || root == q {
+		return root
+	}
+	// 左子树找p,q的公共祖先，p,q都不在左边返回nil, p,q有一个在里面返回p或q, p,q都在里面返回公共祖先
+	left := lowestCommonAncestor1(root.Left, p, q)
+	right := lowestCommonAncestor1(root.Right, p, q)
+	// 左右都不空，说明p,q一个在左，一个在右，返回root
+	if left != nil && right != nil {
+		return root
+	}
+	// 左不空，右空，说明p,q都在左，此时left就是最近公共祖先
+	if left != nil {
+		return left
+	}
+	return right
+}
+```
+
+## 20、54旋转打印矩阵元素
+
+法一：4个指针 + 1个方向控制
+
+4个指针：up,down,left,right
+
+```go
+/*
+法二：自己想的4指针+1方向
+4指针：up,down,left,right 代表矩阵中的索引
+当direct为向右走时候，在up行上面，从left指针开始遍历到right指针结束，该行遍历玩，up++
+当direct为向下走时候，在right列上面，从up开始到down结束，走完向下的一列后，right--
+direct 向左，在down行上利用，left,right信息向左走
+
+direct利用取模来控制方向
+循环结束条件：res数组长度 == m*n
+ */
+func spiralOrder1(matrix [][]int) []int {
+	if len(matrix) == 0 {
+		return []int{}
+	}
+	up, down, left, right := 0, len(matrix)-1, 0, len(matrix[0])-1
+	res := make([]int, 0)
+	var direct int
+	for len(res) != len(matrix)*len(matrix[0]) {
+		// 向右走
+		if direct == 0 {
+			res = append(res, matrix[up][left:right+1]...)
+			up++
+		}
+
+		// 向下
+		if direct == 1 {
+			for i := up; i <= down; i++ {
+				res = append(res, matrix[i][right])
+			}
+			right--
+		}
+
+		// 向左
+		if direct == 2 {
+			for j := right; j >= left; j-- {
+				res = append(res, matrix[down][j])
+			}
+			down--
+		}
+		if direct == 3 {
+			// 向上
+			for i := down; i >= up; i-- {
+				res = append(res, matrix[i][left])
+			}
+			left++
+		}
+		direct = (direct + 1) % 4
+	}
+	return res
+}
+```
+
