@@ -528,7 +528,73 @@ dp[i]  = max{ dp[i-1]+nums[i],  nums[i]}
 
 
 
-法二：分治， 和线段树有关，暂时没看
+法二：分治
+
+
+
+子函数定义：在闭区间[l,r]上求，4个值
+
+```
+求 包含l的最大子数组和lsum,
+   包含r的最大子数组和rsum
+   l,r区间内的最大子数组和msum，可能包含l,r，可能不包含
+   区间和sum
+```
+
+[l,mid] 和[mid+1,r]合并左右区间时候:
+
+lsum为左边从l开始或者左区间+右边从l开始的： max(left.lsum, left.sum+right.lsum)
+
+
+
+时间复杂度分析：O(N)
+
+T(n) = 2T(n/2) + 1
+
+深度为logn, 
+
+总时间为等比数列求和：1 + 2**1 + 2^2 + 2^3 +... + 2^logn = O(n)
+
+**注意**：分治的时间为O(N), 二分查找的时间为O(logN), 因为分支是函数递归调用，二分查找没有递归
+
+```go
+func maxSubArray(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	return process(nums, 0, len(nums)-1).msum
+}
+
+// 在[l,r]闭区间上，
+/*
+ 求包含l的最大子数组和lsum,
+   包含r的最大子数组和rsum
+   l,r区间内的最大子数组和，可能包含l,r，可能不包含
+   区间和sum
+*/
+
+type State struct {
+	lsum int
+	rsum int
+	msum int
+	sum  int
+}
+
+func process(nums []int, l, r int) State {
+	if l == r {
+		return State{nums[l], nums[l], nums[l], nums[l]}
+	}
+	mid := l + (r-l)/2
+	ls := process(nums, l, mid)
+	rs := process(nums, mid+1, r)
+	s := State{}
+	s.lsum = max(ls.lsum, ls.sum+rs.lsum)
+	s.rsum = max(rs.rsum, rs.sum+ls.rsum)
+	s.sum = ls.sum + rs.sum
+	s.msum = max(ls.msum, rs.msum, s.lsum, s.rsum, s.sum, ls.rsum+rs.lsum)
+	return s
+}
+```
 
 
 
@@ -789,6 +855,204 @@ func spiralOrder1(matrix [][]int) []int {
 		direct = (direct + 1) % 4
 	}
 	return res
+}
+```
+
+## 21、143重排链表
+
+本题的关键是怎么从单链表尾部向左前进，核心是翻转又半边
+
+step1: 利用快慢指针找到中点
+
+step2: 从中点向右翻转链表
+
+step3: l,r两个指针向中间走，边走边插入
+
+## 22、56合并区间
+
+按照下限min排序后呈现出的特性是该题的关键: 排序后能合并的区间在排序后的数组中index一定是连续的，因为此时min已经按照从小到大排序，后面的 min1   <= min2 , 所以此时判断是否重叠的条件只有一种就是 min1  min2  <= max1, 满足这一个条件就可以合并，合并只改变上界不改变下界 
+
+
+
+## 23、124二叉树的最大路径和
+
+path的定义决定了一个节点只能有2条边，所以在递归时候要求每个函数返回3个信息
+
+1、根节点参与的最大值
+
+2、根不参与的最大值
+
+3、根走path的最大值
+
+
+
+1和3的区别：
+
+1 = max(root, root+left, root+right, root+left+right)
+
+3 = max(root, root+left, root+right), 
+
+```go
+对于下面的二叉树
+    1
+2       3
+
+根节点参与的最大值是：max(1, 1+2, 1+3, 1+2+3)
+根从path max(1,1+2,1+3), 此时根不能左右都选择
+```
+
+## 24、31下一个排列
+
+```go
+/*
+法一：两次遍历查找
+先从右向左遍历，找右边比自己小的最大者，并交换
+交换后当前的index数变大了，要把index+1到末尾的数变成最小值
+再从index+1开始，从左向右遍历，进行冒泡排序
+
+时间：O(N^2)
+空间：O(1)
+
+*/
+func nextPermutation(nums []int) {
+	n := len(nums)
+	if n == 1 {
+		return
+	}
+	// step1: 先从n-2开始向左走，找右边比自己大的最小者，找到则结束，记录当前index，找不到index=-1
+	index := n - 2
+	for index >= 0 {
+		t := findLarger(nums, index+1, n-1, nums[index])
+		if t != -1 {
+			// 交换，并中止
+			nums[t], nums[index] = nums[index], nums[t]
+			break
+		}
+		index--
+	}
+	// step2: 对index+1到n进行排序，从index+1向右走，找右边比自己小的最小者和自己交换，直到末尾结束
+	for i := index + 1; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			if nums[j] < nums[i] {
+				nums[i], nums[j] = nums[j], nums[i]
+			}
+		}
+	}
+}
+
+// 在[l,r]上找严格大于target的最小者，有返回index, 没有返回-1
+func findLarger(nums []int, l, r, target int) int {
+	index := -1
+	curMax := 1<<63 - 1
+	for l <= r {
+		if target < nums[l] && nums[l] < curMax {
+			index, curMax = l, nums[l]
+		}
+		l++
+	}
+	return index
+}
+
+
+```
+
+法二：
+
+优化点：
+step1找右边比自己大的最小值时候可以用O(N)时间来实现
+step2在做排序的过程，可以证明当前的index+1到末尾一定是降序排列的，所以O(N)时间就可完成排序
+
+具体来说：
+1、先找右边比自己大的最小值匹配对(i,j)
+
+		step1: 从n-2开始向左走，若nums[i] < nums[i+1]停止, 此时的i就是要交换的左边
+			此时的nums[i+1:n]一定降序，因为不是降序的话就不满足上面的条件
+	    step2: 既然nums[i+1:n]为降序，那就从n-1开始向左走，第一个nums[j]比nums[i]大的数就是i右边比它大的最小者
+	    step3: swap(i,j)
+	        此时的交换后的nums[i+1:n]仍然是降序
+	      证明：条件1: nums[j-1] >= nums[j] >= nums[j+1]
+	           条件2：             nums[j] > nums[i]
+	
+				联立1和2可得：nums[j-1] >= nums[j] > nums[i]
+	                ==> nums[j-1] > nums[i]
+	          而nums[i]一定大于nums[j+1], 因为step2是满足该条件往左走的
+	                ==> nums[i] > nums[j+!]
+
+2、对index+1到n排序
+由1可知，index+1到n均为降序，所以双指针交换即可替代排序操作
+
+```go
+// 优化之后的法二
+func nextPermutation(nums []int) {
+	n := len(nums)
+	if n == 1 || n == 0 {
+		return
+	}
+	// step1: 从右向左找第一个升序索引，例如1,2,4,3 第一个升序索引为1，数字为2,4升序
+	index := n - 2
+	for index >= 0 && nums[index] >= nums[index+1] {
+		index-- // 降序则继续走
+	}
+	if index >= 0 {
+		// index+1到n的降序数组上，从右向左找比index大的最小者
+		for j := n - 1; j >= index+1; j-- {
+			if nums[j] > nums[index] {
+				// 找到交换，并中止
+				nums[index], nums[j] = nums[j], nums[index]
+				break
+			}
+		}
+	}
+	// step2: 对index+1后面进行翻转
+	l, r := index+1, n-1
+	for l <= r {
+		nums[l], nums[r] = nums[r], nums[l]
+		l++
+		r--
+	}
+}
+```
+
+## 25、41缺失的第一个正数
+
+思想：通过交互利用原数组来保存从1开始递增1的连续子序列，
+
+例如    nums = [-1,1,5,6,2]
+
+交换后 nums = [1,2,x,x,x], 连续的[1,2]在数组的最前面，下一个x不是递增的，返回该x对应的index+1即为答案
+
+
+
+所以该问题等价于：在无序数组中求从1开始的连续自增子序列的最大值
+
+例如nums = [-1,1,5,6,2], 的连续从1开始自增子序列为[1,2], 故最大值为2，长度为2
+
+```go
+/*
+对上面方法做代码上优化：
+step1: 先做交换调整位置
+step2: 根据调整后的数组来求解，
+              若调整后数组的第一个元素就不满足nums[i] = i+1, 则返回i+1就是答案，例如nums[0] = -1 or 6, 返回1
+step3: 若遍历完调整后的数组没有返回，说明整个数组都是严格自增1的，例如[1,2,3,4], 此时返回n+1
+*/
+func firstMissingPositive(nums []int) int {
+	n := len(nums)
+	i := 0
+	for i < n {
+		// 不越界 && 要交互的两个元素不相等 则交互
+		// 两个元素相等不交换是应对死循环的
+		if index := nums[i] - 1; 0 <= index && index < len(nums) && nums[i] != nums[index] {
+			nums[i], nums[index] = nums[index], nums[i]
+		} else {
+			i++
+		}
+	}
+	for i := range nums {
+		if i+1 != nums[i] {
+			return i + 1
+		}
+	}
+	return n + 1
 }
 ```
 
